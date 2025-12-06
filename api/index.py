@@ -1,20 +1,16 @@
 import sys
 import os
-import logging
-
-# Configurar logging
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
+from pathlib import Path
 
 # Agregar la carpeta raíz al path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+root_dir = Path(__file__).parent.parent
+sys.path.insert(0, str(root_dir))
 
-try:
-    from app import app
-    logger.info("App importada exitosamente")
-except Exception as e:
-    logger.error(f"Error importando app: {e}", exc_info=True)
-    raise
+# Establecer variables de entorno
+os.environ.setdefault('FLASK_ENV', os.environ.get('FLASK_ENV', 'production'))
 
-# Exportar para Vercel
-handler = app
+from app import app
+
+# Para Vercel, necesitamos exportar la aplicación Flask directamente
+# Vercel llama a la función WSGI (que Flask proporciona automáticamente)
+

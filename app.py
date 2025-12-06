@@ -147,7 +147,9 @@ def create_app(config_name='development'):
     return app
 
 # Crear instancia de la app para Vercel
-app = create_app(os.getenv('FLASK_ENV', 'development'))
+flask_env = os.getenv('FLASK_ENV', 'development')
+config_name = 'production' if flask_env == 'production' else 'development'
+app = create_app(config_name)
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", debug=True, port=5000)
