@@ -29,25 +29,18 @@ def create_app(config_name='development'):
     # Context processor para pasar configuración a todos los templates
     @app.context_processor
     def inject_config():
-        try:
-            from models import SystemSettings, Module
-            settings = SystemSettings.query.first()
-            if not settings:
-                settings = SystemSettings()
-            # Pasar todos los módulos con acceso por nombre
-            all_modules = Module.query.all()
-            modules_dict = {module.name: module for module in all_modules}
-            return {'hotel_settings': settings, 'modules_dict': modules_dict}
-        except Exception:
-            # En caso de error (BD no inicializada), retornar valores por defecto
-            return {'hotel_settings': None, 'modules_dict': {}}
+        from models import SystemSettings, Module
+        settings = SystemSettings.query.first()
+        if not settings:
+            settings = SystemSettings()
+        # Pasar todos los módulos con acceso por nombre
+        all_modules = Module.query.all()
+        modules_dict = {module.name: module for module in all_modules}
+        return {'hotel_settings': settings, 'modules_dict': modules_dict}
     
     # Crear contexto de la aplicación
     with app.app_context():
-        try:
-            db.create_all()
-        except Exception as e:
-            print(f"Error creando tablas: {e}")
+        db.create_all()
     
     # Registrar blueprints
     app.register_blueprint(auth_bp)
