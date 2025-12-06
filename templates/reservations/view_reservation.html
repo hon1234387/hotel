@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Reservación{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-calendar"></i> Reservación</h1>
+</div>
+
+<div class="row">
+    <div class="col-12 col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-info-circle"></i> Detalles
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-12 col-md-6">
+                        <h6>Huésped</h6>
+                        <p>{{ reservation.guest.first_name }} {{ reservation.guest.last_name }}</p>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <h6>Habitación</h6>
+                        <p>{{ reservation.room.room_number }}</p>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12 col-md-6">
+                        <h6>Check-in</h6>
+                        <p>{{ reservation.check_in_date.strftime('%d/%m/%Y') }}</p>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <h6>Check-out</h6>
+                        <p>{{ reservation.check_out_date.strftime('%d/%m/%Y') }}</p>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <h6>Estado</h6>
+                    <p><span class="badge bg-info">{{ reservation.status }}</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-cog"></i> Opciones
+            </div>
+            <div class="card-body d-grid gap-2">
+                {% if reservation.status == 'confirmed' %}
+                    <button class="btn btn-info" onclick="changeStatus('checked_in')">
+                        <i class="fas fa-sign-in-alt"></i> Check-in
+                    </button>
+                {% endif %}
+                
+                {% if reservation.status in ['checked_in', 'confirmed'] %}
+                    <button class="btn btn-warning" onclick="changeStatus('checked_out')">
+                        <i class="fas fa-sign-out-alt"></i> Check-out
+                    </button>
+                {% endif %}
+                
+                {% if reservation.status not in ['checked_out', 'cancelled'] %}
+                    <a href="{{ url_for('reservations.extend_reservation', reservation_id=reservation.id) }}" class="btn btn-primary">
+                        <i class="fas fa-calendar-plus"></i> Extender Reserva
+                    </a>
+                    <button class="btn btn-danger" onclick="changeStatus('cancelled')">
+                        <i class="fas fa-times-circle"></i> Cancelar
+                    </button>
+                {% endif %}
+                
+                <a href="/reservations" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function changeStatus(newStatus) {
+    if (newStatus === 'cancelled') {
+        if (!confirm('¿Estás seguro de que deseas cancelar esta reservación?')) {
+            return;
+        }
+    }
+    
+    fetch('{{ url_for("reservations.change_reservation_status", reservation_id=reservation.id) }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({status: newStatus})
+    }).then(response => response.json()).then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error: ' + (data.error || 'No se pudo actualizar el estado'));
+        }
+    }).catch(error => {
+        console.error('Error:', error);
+        alert('Error al actualizar el estado');
+    });
+}
+</script>
+{% endblock %}

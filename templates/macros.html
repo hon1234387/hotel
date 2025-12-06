@@ -1,0 +1,50 @@
+<!-- Macro para renderizar campos de formulario modernizados -->
+{% macro render_field(field, class="", label_class="", help_text="") %}
+<div class="form-group">
+    {% if field.type != 'CSRFTokenField' %}
+        {% if field.label %}
+            <label for="{{ field.id }}" class="form-label {{ label_class }}">
+                {{ field.label.text }}
+                {% if field.flags.required %}<span class="text-danger">*</span>{% endif %}
+            </label>
+        {% endif %}
+        
+        {% if field.type == 'StringField' %}
+            {{ field(class="form-control " + class, required=field.flags.required) }}
+        {% elif field.type == 'IntegerField' %}
+            {{ field(class="form-control " + class, required=field.flags.required) }}
+        {% elif field.type == 'FloatField' %}
+            {{ field(class="form-control " + class, required=field.flags.required) }}
+        {% elif field.type == 'SelectField' %}
+            {{ field(class="form-select " + class, required=field.flags.required) }}
+        {% elif field.type == 'TextAreaField' %}
+            {{ field(class="form-control " + class, rows="4", required=field.flags.required) }}
+        {% elif field.type == 'DateField' %}
+            {{ field(class="form-control " + class, required=field.flags.required) }}
+        {% elif field.type == 'DateTimeField' %}
+            {{ field(class="form-control " + class, required=field.flags.required) }}
+        {% elif field.type == 'BooleanField' %}
+            <div class="form-check">
+                {{ field(class="form-check-input") }}
+                <label class="form-check-label" for="{{ field.id }}">
+                    {{ field.label.text if field.label else '' }}
+                </label>
+            </div>
+        {% else %}
+            {{ field(class="form-control " + class) }}
+        {% endif %}
+        
+        {% if field.errors %}
+            <div class="invalid-feedback d-block">
+                {% for error in field.errors %}
+                    <i class="fas fa-exclamation-circle"></i> {{ error }}
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        {% if help_text %}
+            <small class="form-text">{{ help_text }}</small>
+        {% endif %}
+    {% endif %}
+</div>
+{% endmacro %}

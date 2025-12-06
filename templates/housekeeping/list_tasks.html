@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Limpieza{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-broom"></i> Tareas de Limpieza</h1>
+</div>
+
+<div class="mb-3">
+    <a href="{{ url_for('housekeeping.create_housekeeping_task') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Nueva Tarea
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-list"></i> Tareas Pendientes
+    </div>
+    <div class="card-body">
+        {% if tasks.items %}
+        <div class="table-responsive">
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th>Habitación</th>
+                        <th class="d-none d-md-table-cell">Tipo de Tarea</th>
+                        <th>Estado</th>
+                        <th>Vencimiento</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for task in tasks.items %}
+                    <tr>
+                        <td><strong>{{ task.room.room_number }}</strong></td>
+                        <td class="d-none d-md-table-cell">
+                            {% if task.task_type == 'cleaning' %}
+                                <span class="badge bg-info">Limpieza</span>
+                            {% elif task.task_type == 'inspection' %}
+                                <span class="badge bg-warning">Inspección</span>
+                            {% elif task.task_type == 'turnover' %}
+                                <span class="badge bg-secondary">Cambio de Huésped</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if task.status == 'pending' %}
+                                <span class="badge bg-warning">Pendiente</span>
+                            {% elif task.status == 'in_progress' %}
+                                <span class="badge bg-info">En Progreso</span>
+                            {% elif task.status == 'completed' %}
+                                <span class="badge bg-success">Completado</span>
+                            {% elif task.status == 'hold' %}
+                                <span class="badge bg-danger">En Espera</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ task.due_date.strftime('%d/%m/%Y') if task.due_date else 'N/A' }}</td>
+                        <td>
+                            {% if task.status != 'completed' %}
+                            <form method="POST" action="{{ url_for('housekeeping.complete_housekeeping_task', task_id=task.id) }}" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-success" title="Completar tarea">
+                                    <i class="fas fa-check-circle"></i>
+                                </button>
+                            </form>
+                            {% else %}
+                            <span class="text-success" title="Completado">
+                                <i class="fas fa-check-circle"></i>
+                            </span>
+                            {% endif %}
+                            <a href="{{ url_for('housekeeping.update_housekeeping_status', task_id=task.id) }}" class="btn btn-sm btn-warning" onclick="changeStatus({{ task.id }}, event)">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> No hay tareas de limpieza
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function changeStatus(taskId, event) {
+    event.preventDefault();
+    const newStatus = prompt('Nuevo estado (pending, in_progress, completed, hold):');
+    if (newStatus) {
+        fetch(`/housekeeping/${taskId}/update-status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({status: newStatus})
+        }).then(r => r.json()).then(data => {
+            location.reload();
+        });
+    }
+}
+</script>
+{% endblock %}

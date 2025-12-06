@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Ver Servicio{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-concierge-bell"></i> Detalles del Servicio</h1>
+</div>
+
+<div class="row">
+    <div class="col-12 col-md-8">
+        <div class="card mb-3">
+            <div class="card-header">
+                <i class="fas fa-info-circle"></i> Información
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <strong>Nombre:</strong><br>{{ service.name }}
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-6 col-md-4">
+                        <strong>Precio:</strong><br><span class="text-success fs-5">${{ "%.2f"|format(service.price) }}</span>
+                    </div>
+                    <div class="col-6 col-md-4">
+                        <strong>Disponible:</strong><br>
+                        {% if service.is_available %}
+                            <span class="badge bg-success">Sí</span>
+                        {% else %}
+                            <span class="badge bg-danger">No</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                {% if service.description %}
+                <div class="row">
+                    <div class="col-12">
+                        <strong>Descripción:</strong><br>
+                        <p>{{ service.description }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="d-flex gap-2">
+            <a href="/services" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+            <a href="/services/{{ service.id }}/edit" class="btn btn-warning">
+                <i class="fas fa-edit"></i> Editar
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

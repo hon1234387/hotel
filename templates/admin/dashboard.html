@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block title %}Panel de Administración{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="mb-0">
+                <i class="fas fa-tachometer-alt"></i> Panel de Administración
+            </h1>
+        </div>
+    </div>
+
+    <!-- Tarjetas de Estadísticas -->
+    <div class="row mb-4">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3">
+            <div class="card bg-primary text-white shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-1 fw-light">Usuarios</h6>
+                            <h2 class="mb-0">{{ total_users }}</h2>
+                        </div>
+                        <i class="fas fa-users fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3">
+            <div class="card bg-success text-white shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-1 fw-light">Huéspedes</h6>
+                            <h2 class="mb-0">{{ total_guests }}</h2>
+                        </div>
+                        <i class="fas fa-user-tie fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3">
+            <div class="card bg-info text-white shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-1 fw-light">Habitaciones</h6>
+                            <h2 class="mb-0">{{ total_rooms }}</h2>
+                        </div>
+                        <i class="fas fa-door-open fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3">
+            <div class="card bg-warning text-white shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-1 fw-light">Reservaciones</h6>
+                            <h2 class="mb-0">{{ total_reservations }}</h2>
+                        </div>
+                        <i class="fas fa-calendar-alt fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3">
+            <div class="card bg-danger text-white shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-1 fw-light">Activas Ahora</h6>
+                            <h2 class="mb-0">{{ active_reservations }}</h2>
+                        </div>
+                        <i class="fas fa-check-circle fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3">
+            <div class="card bg-secondary text-white shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-1 fw-light">Ingresos Totales</h6>
+                            <h2 class="mb-0">${{ "%.2f"|format(total_revenue) }}</h2>
+                        </div>
+                        <i class="fas fa-money-bill-wave fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Últimos Huéspedes -->
+        <div class="col-12 col-lg-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light border-bottom">
+                    <h5 class="mb-0"><i class="fas fa-user-check"></i> Últimos Huéspedes</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if recent_guests %}
+                    <div class="list-group list-group-flush">
+                        {% for guest in recent_guests %}
+                        <div class="list-group-item px-4 py-3 border-bottom">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">{{ guest.first_name }} {{ guest.last_name }}</h6>
+                                    <small class="text-muted">
+                                        <i class="fas fa-envelope"></i> {{ guest.email }}<br>
+                                        <i class="fas fa-phone"></i> {{ guest.phone }}
+                                    </small>
+                                </div>
+                                <span class="badge bg-primary">ID: {{ guest.id }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="p-4 text-center text-muted">
+                        <i class="fas fa-inbox fa-2x mb-2"></i>
+                        <p>No hay huéspedes registrados</p>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-light text-center">
+                    <a href="{{ url_for('guests.list_guests') }}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-arrow-right"></i> Ver Todos
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Últimas Reservaciones -->
+        <div class="col-12 col-lg-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light border-bottom">
+                    <h5 class="mb-0"><i class="fas fa-calendar-check"></i> Últimas Reservaciones</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if recent_reservations %}
+                    <div class="list-group list-group-flush">
+                        {% for reservation in recent_reservations %}
+                        <div class="list-group-item px-4 py-3 border-bottom">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">
+                                        {{ reservation.guest.first_name }} {{ reservation.guest.last_name }}
+                                        - Habitación {{ reservation.room.room_number }}
+                                    </h6>
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar"></i> 
+                                        {{ reservation.check_in_date.strftime('%d/%m/%Y') }} - 
+                                        {{ reservation.check_out_date.strftime('%d/%m/%Y') }}
+                                    </small>
+                                </div>
+                                <span class="badge 
+                                    {% if reservation.status == 'confirmed' %}bg-success
+                                    {% elif reservation.status == 'pending' %}bg-warning
+                                    {% elif reservation.status == 'cancelled' %}bg-danger
+                                    {% elif reservation.status == 'checked_in' %}bg-info
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ reservation.status }}
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="p-4 text-center text-muted">
+                        <i class="fas fa-inbox fa-2x mb-2"></i>
+                        <p>No hay reservaciones</p>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-light text-center">
+                    <a href="{{ url_for('reservations.list_reservations') }}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-arrow-right"></i> Ver Todas
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accesos Rápidos -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-quick-access"></i> Accesos Rápidos</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-2">
+                        <div class="col-6 col-sm-4 col-md-3">
+                            <a href="{{ url_for('admin.users') }}" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-users-cog"></i> Gestionar Usuarios
+                            </a>
+                        </div>
+                        <div class="col-6 col-sm-4 col-md-3">
+                            <a href="{{ url_for('admin.reports') }}" class="btn btn-outline-info w-100">
+                                <i class="fas fa-chart-bar"></i> Reportes
+                            </a>
+                        </div>
+                        <div class="col-6 col-sm-4 col-md-3">
+                            <a href="{{ url_for('admin.settings') }}" class="btn btn-outline-secondary w-100">
+                                <i class="fas fa-cog"></i> Configuración
+                            </a>
+                        </div>
+                        <div class="col-6 col-sm-4 col-md-3">
+                            <a href="{{ url_for('guests.list_guests') }}" class="btn btn-sm btn-outline-success w-100">
+                                <i class="fas fa-user-tie"></i> Huéspedes
+                            </a>
+                        </div>
+                        <div class="col-6 col-sm-4 col-md-3">
+                            <a href="{{ url_for('rooms.list_rooms') }}" class="btn btn-sm btn-outline-warning w-100">
+                                <i class="fas fa-door-open"></i> Habitaciones
+                            </a>
+                        </div>
+                        <div class="col-6 col-sm-4 col-md-3">
+                            <a href="{{ url_for('reservations.list_reservations') }}" class="btn btn-sm btn-outline-danger w-100">
+                                <i class="fas fa-calendar-alt"></i> Reservaciones
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

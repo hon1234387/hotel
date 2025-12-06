@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Hotel Management{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>
+        <i class="fas fa-chart-line"></i>
+        Dashboard
+    </h1>
+</div>
+
+<div class="row g-2 g-md-3 mb-4">
+    <div class="col-12 col-sm-6 col-md-4 col-lg-2-4">
+        <a href="/rooms" style="text-decoration: none;">
+            <div class="card stat-card stat-card-primary" style="cursor: pointer;">
+                <i class="fas fa-door-open"></i>
+                <div>Habitaciones Totales</div>
+                <h3>{{ total_rooms }}</h3>
+            </div>
+        </a>
+    </div>
+    <div class="col-12 col-sm-6 col-md-4 col-lg-2-4">
+        <a href="/rooms?status=available" style="text-decoration: none;">
+            <div class="card stat-card stat-card-success" style="cursor: pointer;">
+                <i class="fas fa-check-circle"></i>
+                <div>Disponibles</div>
+                <h3>{{ available_rooms }}</h3>
+            </div>
+        </a>
+    </div>
+    <div class="col-12 col-sm-6 col-md-4 col-lg-2-4">
+        <a href="/rooms?status=occupied" style="text-decoration: none;">
+            <div class="card stat-card stat-card-danger" style="cursor: pointer;">
+                <i class="fas fa-ban"></i>
+                <div>Ocupadas</div>
+                <h3>{{ occupied_rooms }}</h3>
+            </div>
+        </a>
+    </div>
+    <div class="col-12 col-sm-6 col-md-4 col-lg-2-4">
+        <a href="/rooms?status=maintenance" style="text-decoration: none;">
+            <div class="card stat-card stat-card-warning" style="cursor: pointer;">
+                <i class="fas fa-tools"></i>
+                <div>Mantenimiento</div>
+                <h3>{{ maintenance_rooms }}</h3>
+            </div>
+        </a>
+    </div>
+    <div class="col-12 col-sm-6 col-md-4 col-lg-2-4">
+        <a href="/rooms?status=cleaning" style="text-decoration: none;">
+            <div class="card stat-card" style="background: linear-gradient(135deg, #9b59b6, #8e44ad); cursor: pointer;">
+                <i class="fas fa-broom"></i>
+                <div>En Limpieza</div>
+                <h3>{{ cleaning_rooms }}</h3>
+            </div>
+        </a>
+    </div>
+</div>
+
+<div class="row g-2 g-md-3 mb-4">
+    <div class="col-12 col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-sign-in-alt"></i>
+                Check-ins Hoy
+            </div>
+            <div class="card-body">
+                <div class="text-center">
+                    <h3>{{ today_checkins }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-sign-out-alt"></i>
+                Check-outs Hoy
+            </div>
+            <div class="card-body">
+                <div class="text-center">
+                    <h3>{{ today_checkouts }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-calendar"></i>
+        Próximas Reservaciones
+    </div>
+    <div class="card-body">
+        {% if upcoming_reservations %}
+        <div class="table-responsive">
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th>Huésped</th>
+                        <th class="d-none d-sm-table-cell">Habitación</th>
+                        <th class="d-none d-md-table-cell">Check-in</th>
+                        <th class="d-none d-md-table-cell">Check-out</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for res in upcoming_reservations[:10] %}
+                    <tr>
+                        <td>{{ res.guest.first_name }}</td>
+                        <td class="d-none d-sm-table-cell">{{ res.room.room_number }}</td>
+                        <td class="d-none d-md-table-cell">{{ res.check_in_date.strftime('%d/%m/%Y') }}</td>
+                        <td class="d-none d-md-table-cell">{{ res.check_out_date.strftime('%d/%m/%Y') }}</td>
+                        <td><span class="badge bg-info">{{ res.status }}</span></td>
+                        <td>
+                            {% if res.status == 'confirmed' %}
+                                <button class="btn btn-sm btn-success" onclick="quickCheckIn('{{ res.id }}')" title="Cliente llegó">
+                                    <i class="fas fa-sign-in-alt"></i>
+                                </button>
+                            {% elif res.status == 'checked_in' %}
+                                <button class="btn btn-sm btn-warning" onclick="checkOut('{{ res.id }}')" title="Cliente se va">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                </button>
+                            {% endif %}
+                            <a href="/reservations/{{ res.id }}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            No hay reservaciones próximas
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function quickCheckIn(reservationId) {
+    if (confirm('¿El cliente ha llegado? Se marcará la habitación como ocupada.')) {
+        fetch(`/reservations/${reservationId}/change-status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({status: 'checked_in'})
+        }).then(response => response.json()).then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error: ' + (data.error || 'No se pudo actualizar el estado'));
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+            alert('Error al actualizar el estado');
+        });
+    }
+}
+
+function checkOut(reservationId) {
+    if (confirm('¿El cliente se va? Se marcará la habitación para limpieza.')) {
+        fetch(`/reservations/${reservationId}/change-status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({status: 'checked_out'})
+        }).then(response => response.json()).then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error: ' + (data.error || 'No se pudo actualizar el estado'));
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+            alert('Error al actualizar el estado');
+        });
+    }
+}
+</script>
+{% endblock %}

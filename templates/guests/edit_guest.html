@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Huésped{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>
+        <i class="fas fa-edit"></i>
+        Editar Huésped
+    </h1>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-12 col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-12 col-md-6 mb-3">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" class="form-control" name="first_name" value="{{ guest.first_name }}" required>
+                        </div>
+                        <div class="col-12 col-md-6 mb-3">
+                            <label class="form-label">Apellido</label>
+                            <input type="text" class="form-control" name="last_name" value="{{ guest.last_name }}" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" name="email" value="{{ guest.email }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Teléfono</label>
+                        <input type="tel" class="form-control" name="phone" value="{{ guest.phone or '' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Dirección</label>
+                        <input type="text" class="form-control" name="address" value="{{ guest.address or '' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Documento de Identidad</label>
+                        <input type="text" class="form-control" name="id_document" value="{{ guest.id_document or '' }}">
+                    </div>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="/guests/{{ guest.id }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i>
+                            Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i>
+                            Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

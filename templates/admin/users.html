@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}Gestión de Usuarios{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12 col-md-6">
+            <h1><i class="fas fa-users-cog"></i> Gestión de Usuarios</h1>
+        </div>
+        <div class="col-12 col-md-6 text-md-end mt-2 mt-md-0">
+            <a href="{{ url_for('admin.index') }}" class="btn btn-secondary me-2">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+            <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                <i class="fas fa-plus"></i> Nuevo Usuario
+            </a>
+        </div>
+    </div>
+
+    <!-- Filtros de búsqueda -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-12 col-md-6">
+                    <input type="text" name="search" class="form-control" placeholder="Buscar por nombre, usuario o correo..." value="{{ search }}">
+                </div>
+                <div class="col-12 col-md-4">
+                    <select name="role" class="form-select">
+                        <option value="">Todos los Roles</option>
+                        <option value="admin" {% if role_filter == 'admin' %}selected{% endif %}>Administrador</option>
+                        <option value="manager" {% if role_filter == 'manager' %}selected{% endif %}>Gerente</option>
+                        <option value="receptionist" {% if role_filter == 'receptionist' %}selected{% endif %}>Recepcionista</option>
+                        <option value="housekeeper" {% if role_filter == 'housekeeper' %}selected{% endif %}>Personal de Limpieza</option>
+                        <option value="staff" {% if role_filter == 'staff' %}selected{% endif %}>Personal</option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de usuarios -->
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Usuario</th>
+                        <th class="d-none d-md-table-cell">Nombre Completo</th>
+                        <th class="d-none d-lg-table-cell">Correo</th>
+                        <th class="d-none d-md-table-cell">Rol</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td><strong>{{ user.username }}</strong></td>
+                        <td class="d-none d-md-table-cell">{{ user.full_name or 'N/A' }}</td>
+                        <td class="d-none d-lg-table-cell">
+                            <small>{{ user.email }}</small>
+                        </td>
+                        <td class="d-none d-md-table-cell">
+                            <span class="badge 
+                                {% if user.role == 'admin' %}bg-danger
+                                {% elif user.role == 'manager' %}bg-warning
+                                {% elif user.role == 'receptionist' %}bg-info
+                                {% elif user.role == 'housekeeper' %}bg-success
+                                {% else %}bg-secondary{% endif %}">
+                                {{ user.role }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if user.is_active %}
+                            <span class="badge bg-success">Activo</span>
+                            {% else %}
+                            <span class="badge bg-danger">Inactivo</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <a href="{{ url_for('admin.edit_user', user_id=user.id) }}" class="btn btn-outline-primary" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form method="POST" action="{{ url_for('admin.toggle_user_status', user_id=user.id) }}" style="display:inline;">
+                                    <button type="submit" class="btn btn-outline-warning" title="Cambiar estado" onclick="return confirm('¿Cambiar estado del usuario?')">
+                                        <i class="fas fa-toggle-{% if user.is_active %}off{% else %}on{% endif %}"></i>
+                                    </button>
+                                </form>
+                                {% if user.id != current_user.id %}
+                                <form method="POST" action="{{ url_for('admin.delete_user', user_id=user.id) }}" style="display:inline;">
+                                    <button type="submit" class="btn btn-outline-danger" title="Eliminar" onclick="return confirm('¿Está seguro? Esta acción no se puede deshacer.')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Paginación -->
+    {% if pages > 1 %}
+    <nav aria-label="Paginación" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if current_page > 1 %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('admin.users', page=1, search=search, role=role_filter) }}">Primera</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('admin.users', page=current_page-1, search=search, role=role_filter) }}">Anterior</a>
+            </li>
+            {% endif %}
+
+            {% for p in range(max(1, current_page-2), min(pages+1, current_page+3)) %}
+            <li class="page-item {% if p == current_page %}active{% endif %}">
+                <a class="page-link" href="{{ url_for('admin.users', page=p, search=search, role=role_filter) }}">{{ p }}</a>
+            </li>
+            {% endfor %}
+
+            {% if current_page < pages %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('admin.users', page=current_page+1, search=search, role=role_filter) }}">Siguiente</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('admin.users', page=pages, search=search, role=role_filter) }}">Última</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

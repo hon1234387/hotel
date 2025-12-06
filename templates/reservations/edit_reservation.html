@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Reservación{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-edit"></i> Editar Reservación</h1>
+</div>
+
+<div class="row">
+    <div class="col-12 col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-calendar"></i> Actualizar Reservación
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.guest_id.label(class="form-label") }}
+                        {% if form.guest_id.errors %}
+                            {{ form.guest_id(class="form-select is-invalid") }}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.guest_id.errors %}{{ error }}<br>{% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.guest_id(class="form-select") }}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.room_id.label(class="form-label") }}
+                        {% if form.room_id.errors %}
+                            {{ form.room_id(class="form-select is-invalid") }}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.room_id.errors %}{{ error }}<br>{% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.room_id(class="form-select") }}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.check_in_date.label(class="form-label") }}
+                        {% if form.check_in_date.errors %}
+                            {{ form.check_in_date(class="form-control is-invalid", type="date") }}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.check_in_date.errors %}{{ error }}<br>{% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.check_in_date(class="form-control", type="date") }}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.check_out_date.label(class="form-label") }}
+                        {% if form.check_out_date.errors %}
+                            {{ form.check_out_date(class="form-control is-invalid", type="date") }}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.check_out_date.errors %}{{ error }}<br>{% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.check_out_date(class="form-control", type="date") }}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.number_of_guests.label(class="form-label") }}
+                        {% if form.number_of_guests.errors %}
+                            {{ form.number_of_guests(class="form-control is-invalid", type="number") }}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.number_of_guests.errors %}{{ error }}<br>{% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.number_of_guests(class="form-control", type="number", min="1") }}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.special_requests.label(class="form-label") }}
+                        {{ form.special_requests(class="form-control", rows="3", placeholder="Solicitudes especiales...") }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.status.label(class="form-label") }}
+                        {% if form.status.errors %}
+                            {{ form.status(class="form-select is-invalid") }}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.status.errors %}{{ error }}<br>{% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.status(class="form-select") }}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-6">
+                            {{ form.submit(class="btn btn-primary w-100", value="Actualizar") }}
+                        </div>
+                        <div class="col-6">
+                            <a href="/reservations/{{ reservation.id }}" class="btn btn-secondary w-100">Cancelar</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

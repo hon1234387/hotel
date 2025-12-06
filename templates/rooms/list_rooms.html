@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Habitaciones{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h1>
+            <i class="fas fa-door-open"></i>
+            Habitaciones
+        </h1>
+        <a href="/rooms/add" class="btn btn-primary">
+            <i class="fas fa-plus"></i>
+            Agregar
+        </a>
+    </div>
+</div>
+
+{% if current_status %}
+<div style="background-color: rgba(15, 118, 110, 0.1); border-left: 4px solid #0f766e; padding: 0.875rem; margin-bottom: 1.25rem; border-radius: 0.375rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <strong>Filtrando por:</strong>
+            {% set status_names = {'available': 'Disponibles', 'occupied': 'Ocupadas', 'maintenance': 'Mantenimiento', 'cleaning': 'En Limpieza'} %}
+            {% set status_colors = {'available': '#10b981', 'occupied': '#ef4444', 'maintenance': '#f59e0b', 'cleaning': '#9b59b6'} %}
+            <span style="background-color: {{ status_colors.get(current_status, '#6b7280') }}; color: white; padding: 0.25rem 0.75rem; border-radius: 1rem; display: inline-block; margin-left: 0.5rem;">
+                {{ status_names.get(current_status, current_status) }}
+            </span>
+        </div>
+        <a href="/rooms" class="btn btn-sm btn-secondary">
+            <i class="fas fa-times"></i>
+            Limpiar Filtro
+        </a>
+    </div>
+</div>
+{% endif %}
+
+<div style="margin-bottom: 1.25rem;">
+    <small style="color: #6b7280;">
+        <strong>Filtros rápidos:</strong>
+        <a href="/rooms?status=available" style="display: inline-block; background-color: #10b981; color: white; padding: 0.375rem 0.75rem; border-radius: 0.375rem; text-decoration: none; margin-right: 0.5rem;">
+            <i class="fas fa-check-circle"></i> Disponibles
+        </a>
+        <a href="/rooms?status=occupied" style="display: inline-block; background-color: #ef4444; color: white; padding: 0.375rem 0.75rem; border-radius: 0.375rem; text-decoration: none; margin-right: 0.5rem;">
+            <i class="fas fa-lock"></i> Ocupadas
+        </a>
+        <a href="/rooms?status=maintenance" style="display: inline-block; background-color: #f59e0b; color: white; padding: 0.375rem 0.75rem; border-radius: 0.375rem; text-decoration: none; margin-right: 0.5rem;">
+            <i class="fas fa-tools"></i> Mantenimiento
+        </a>
+        <a href="/rooms?status=cleaning" style="display: inline-block; background-color: #9b59b6; color: white; padding: 0.375rem 0.75rem; border-radius: 0.375rem; text-decoration: none;">
+            <i class="fas fa-broom"></i> Limpieza
+        </a>
+    </small>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-list"></i>
+        Lista de Habitaciones
+    </div>
+    <div class="card-body">
+        {% if rooms %}
+        <div class="table-responsive">
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th>Número</th>
+                        <th class="d-none d-md-table-cell">Tipo</th>
+                        <th class="d-none d-md-table-cell">Capacidad</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for room in rooms %}
+                    <tr>
+                        <td><strong>{{ room.room_number }}</strong></td>
+                        <td class="d-none d-md-table-cell">{{ room.room_type }}</td>
+                        <td class="d-none d-md-table-cell">{{ room.capacity }} personas</td>
+                        <td>
+                            <span class="badge {% if room.status == 'available' %}bg-success{% elif room.status == 'occupied' %}bg-danger{% else %}bg-warning{% endif %}">
+                                {{ room.status }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="/rooms/{{ room.id }}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="/rooms/{{ room.id }}/edit" class="btn btn-sm btn-warning">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            {% if current_user.role == 'admin' and room.status == 'available' %}
+                            <form method="POST" action="/rooms/{{ room.id }}/delete" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar esta habitación?')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            No hay habitaciones registradas
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

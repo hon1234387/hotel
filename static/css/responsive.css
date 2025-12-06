@@ -1,0 +1,27 @@
+/* Estilos comunes para todos los templates */
+
+.page-content {
+    width: 100%;
+    max-width: 100%;
+}
+
+.form-wrapper {
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .col-12 { width: 100%; }
+    .col-md-6 { width: 100%; }
+    .col-md-8 { width: 100%; }
+    .col-lg-3 { width: 50%; }
+    .col-lg-4 { width: 100%; }
+}
+
+@media (max-width: 480px) {
+    .table { font-size: 0.8rem; }
+    .table-responsive { overflow-x: auto; }
+    .btn { padding: 0.25rem 0.5rem; font-size: 0.7rem; }
+    .form-control, .form-select { font-size: 0.9rem; padding: 0.5rem; }
+    .row { margin-right: -0.25rem; margin-left: -0.25rem; }
+    .col-12 { padding-right: 0.25rem; padding-left: 0.25rem; }
+}

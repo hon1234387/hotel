@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Pagos{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-credit-card"></i> Gestión de Pagos</h1>
+</div>
+
+<div class="mb-3">
+    <a href="/payments/add" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Registrar Pago
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-list"></i> Registros de Pagos
+    </div>
+    <div class="card-body">
+        {% if payments %}
+        <div class="table-responsive">
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th class="d-none d-md-table-cell">Reservación</th>
+                        <th class="d-none d-md-table-cell">Monto</th>
+                        <th class="d-none d-md-table-cell">Fecha</th>
+                        <th>Método</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for payment in payments %}
+                    <tr>
+                        <td>#{{ payment.id }}</td>
+                        <td class="d-none d-md-table-cell">#{{ payment.reservation_id }}</td>
+                        <td class="d-none d-md-table-cell">${{ "{:.2f}".format(payment.amount) }}</td>
+                        <td class="d-none d-md-table-cell">{{ payment.payment_date.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ payment.payment_method }}</td>
+                        <td>
+                            {% if payment.status == 'completed' %}
+                                <span class="badge bg-success">Completado</span>
+                            {% elif payment.status == 'pending' %}
+                                <span class="badge bg-warning">Pendiente</span>
+                            {% elif payment.status == 'failed' %}
+                                <span class="badge bg-danger">Fallido</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="/payments/{{ payment.id }}" class="btn btn-sm btn-info" title="Ver">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="/payments/{{ payment.id }}/edit" class="btn btn-sm btn-warning" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            {% if current_user.role == 'admin' %}
+                            <form method="POST" action="/payments/{{ payment.id }}/delete" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar este pago?')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> No hay pagos registrados
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

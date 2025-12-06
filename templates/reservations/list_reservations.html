@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Reservaciones{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-calendar"></i> Reservaciones</h1>
+</div>
+
+<div class="mb-3">
+    <a href="/reservations/add" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Nueva Reservación
+    </a>
+    <a href="{{ url_for('reservations.quick_checkin') }}" class="btn btn-success">
+        <i class="fas fa-fast-forward"></i> Check-in Rápido (Walk-in)
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-list"></i> Lista de Reservaciones
+    </div>
+    <div class="card-body">
+        {% if reservations %}
+        <div class="table-responsive">
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th>Huésped</th>
+                        <th class="d-none d-md-table-cell">Habitación</th>
+                        <th class="d-none d-md-table-cell">Check-in</th>
+                        <th class="d-none d-md-table-cell">Check-out</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for res in reservations %}
+                    <tr>
+                        <td>{{ res.guest.first_name }}</td>
+                        <td class="d-none d-md-table-cell">{{ res.room.room_number }}</td>
+                        <td class="d-none d-md-table-cell">{{ res.check_in_date.strftime('%d/%m/%Y') }}</td>
+                        <td class="d-none d-md-table-cell">{{ res.check_out_date.strftime('%d/%m/%Y') }}</td>
+                        <td><span class="badge bg-info">{{ res.status }}</span></td>
+                        <td>
+                            {% if res.status == 'confirmed' %}
+                                <button class="btn btn-sm btn-success" onclick="quickCheckIn({{ res.id }})" title="Cliente llegó">
+                                    <i class="fas fa-sign-in-alt"></i>
+                                </button>
+                            {% elif res.status == 'checked_in' %}
+                                <button class="btn btn-sm btn-warning" onclick="checkOut({{ res.id }})" title="Cliente se va">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                </button>
+                            {% endif %}
+                            <a href="/reservations/{{ res.id }}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            {% if current_user.role == 'admin' and res.status in ['cancelled', 'checked_out'] %}
+                            <form method="POST" action="/reservations/{{ res.id }}/delete" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar esta reservación?')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> No hay reservaciones
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function quickCheckIn(reservationId) {
+    if (confirm('¿El cliente ha llegado? Se marcará la habitación como ocupada.')) {
+        fetch(`/reservations/${reservationId}/change-status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({status: 'checked_in'})
+        }).then(response => response.json()).then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error: ' + (data.error || 'No se pudo actualizar el estado'));
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+            alert('Error al actualizar el estado');
+        });
+    }
+}
+
+function checkOut(reservationId) {
+    if (confirm('¿El cliente se va? Se marcará la habitación para limpieza.')) {
+        fetch(`/reservations/${reservationId}/change-status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({status: 'checked_out'})
+        }).then(response => response.json()).then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error: ' + (data.error || 'No se pudo actualizar el estado'));
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+            alert('Error al actualizar el estado');
+        });
+    }
+}
+</script>
+{% endblock %}

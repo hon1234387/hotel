@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Gestión de Permisos - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1><i class="fas fa-lock"></i> Gestión de Permisos</h1>
+        </div>
+    </div>
+
+    <!-- Crear Nuevo Permiso -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-plus"></i> Crear Nuevo Permiso</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" class="row g-3">
+                        <div class="col-12 col-md-4">
+                            <label for="name" class="form-label">Nombre del Permiso</label>
+                            <input type="text" class="form-control" id="name" name="name" required placeholder="Ej: ver_reportes">
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label for="module_id" class="form-label">Módulo</label>
+                            <select class="form-select" id="module_id" name="module_id" required>
+                                <option value="">Seleccionar módulo...</option>
+                                {% for module in modules %}
+                                    <option value="{{ module.id }}">{{ module.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-3">
+                            <label for="description" class="form-label">Descripción</label>
+                            <input type="text" class="form-control" id="description" name="description" placeholder="Breve descripción">
+                        </div>
+                        <div class="col-12 col-md-1 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100"><i class="fas fa-plus"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de Permisos por Módulo -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-list"></i> Permisos del Sistema</h5>
+                </div>
+                <div class="card-body">
+                    {% if modules %}
+                        {% for module in modules %}
+                            {% if module.is_enabled %}
+                                {% set module_perms = permissions|selectattr('module_id', 'equalto', module.id)|list %}
+                                <div class="mb-4">
+                                    <h6 class="text-muted border-bottom pb-2">
+                                        <i class="{{ module.icon }}"></i> {{ module.name }}
+                                        <span class="badge bg-secondary">{{ module_perms|length }} permisos</span>
+                                    </h6>
+                                {% if module_perms %}
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Nombre</th>
+                                                    <th>Descripción</th>
+                                                    <th>Creado</th>
+                                                    <th>Acciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for perm in module_perms %}
+                                                <tr>
+                                                    <td>
+                                                        <code>{{ perm.name }}</code>
+                                                    </td>
+                                                    <td>{{ perm.description or '-' }}</td>
+                                                    <td>
+                                                        <small class="text-muted">
+                                                            {{ perm.created_at.strftime('%d/%m/%Y') }}
+                                                        </small>
+                                                    </td>
+                                                    <td>
+                                                        <form method="POST" action="{{ url_for('admin.delete_permission', permission_id=perm.id) }}" style="display: inline;">
+                                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar este permiso?')">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {% else %}
+                                    <p class="text-muted ms-3">No hay permisos creados para este módulo</p>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> No hay módulos disponibles. Crea módulos primero.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

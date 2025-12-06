@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Extender Reservación{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-calendar-plus"></i> Extender Reservación</h1>
+</div>
+
+<div class="row">
+    <div class="col-12 col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-info-circle"></i> Detalles de la Reservación
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-12 col-md-6">
+                        <h6>Huésped</h6>
+                        <p><strong>{{ reservation.guest.full_name }}</strong></p>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <h6>Habitación</h6>
+                        <p><strong>{{ reservation.room.room_number }} ({{ reservation.room.room_type }})</strong></p>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12 col-md-6">
+                        <h6>Check-in</h6>
+                        <p>{{ reservation.check_in_date.strftime('%d/%m/%Y') }}</p>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <h6>Check-out Actual</h6>
+                        <p><span class="badge bg-warning">{{ reservation.check_out_date.strftime('%d/%m/%Y') }}</span></p>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12 col-md-6">
+                        <h6>Noches Actuales</h6>
+                        <p><strong>{{ reservation.nights }}</strong></p>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <h6>Costo por Noche</h6>
+                        <p><strong>${{ reservation.room.price_per_night|round(2) }}</strong></p>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <h6>Costo Total Actual</h6>
+                        <p><strong>${{ reservation.room_cost|round(2) }}</strong></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-pen"></i> Extender Reservación
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.new_check_out_date.label(class="form-label") }}
+                        {% if form.new_check_out_date.errors %}
+                            {{ form.new_check_out_date(class="form-control is-invalid", type="date") }}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.new_check_out_date.errors %}{{ error }}<br>{% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.new_check_out_date(class="form-control", type="date") }}
+                        {% endif %}
+                        <small class="text-muted d-block mt-2">
+                            <i class="fas fa-info-circle"></i> 
+                            Debe ser posterior a {{ reservation.check_out_date.strftime('%d/%m/%Y') }}
+                        </small>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.notes.label(class="form-label") }}
+                        {% if form.notes.errors %}
+                            {{ form.notes(class="form-control is-invalid", rows=3) }}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.notes.errors %}{{ error }}<br>{% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.notes(class="form-control", rows=3, placeholder="Notas sobre la extensión...") }}
+                        {% endif %}
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong><i class="fas fa-calculator"></i> Cálculo de Costo:</strong><br>
+                        Se calculará automáticamente el costo adicional basado en las noches extras.
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                        {{ form.submit(class="btn btn-success") }}
+                        <a href="{{ url_for('reservations.view_reservation', reservation_id=reservation.id) }}" class="btn btn-secondary">
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-lightbulb"></i> Información
+            </div>
+            <div class="card-body">
+                <h6>¿Cómo funciona?</h6>
+                <ol style="font-size: 0.9rem;">
+                    <li>Selecciona la nueva fecha de salida</li>
+                    <li>El sistema verificará disponibilidad</li>
+                    <li>Se calcula el costo de noches adicionales</li>
+                    <li>La reservación se actualiza automáticamente</li>
+                </ol>
+
+                <hr>
+
+                <div class="text-warning">
+                    <strong><i class="fas fa-exclamation-triangle"></i> Importante:</strong>
+                    <p style="font-size: 0.9rem; margin-top: 0.5rem;">
+                        La habitación debe estar disponible para las fechas solicitadas. Si hay otro huésped después, no se puede extender.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

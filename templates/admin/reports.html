@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+
+{% block title %}Reportes del Sistema{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1><i class="fas fa-chart-bar"></i> Reportes del Sistema</h1>
+        </div>
+    </div>
+
+    <!-- Ocupación de Habitaciones -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light border-bottom">
+                    <h5 class="mb-0"><i class="fas fa-door-open"></i> Estado de Habitaciones</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-12 col-sm-6 col-md-auto mb-3">
+                            <div class="p-4 rounded bg-success bg-opacity-10 border-start border-success border-5">
+                                <h2 class="mb-1 text-success fw-bold">{{ occupied_rooms }}</h2>
+                                <p class="mb-0 small text-muted">Ocupadas</p>
+                                <small class="text-muted">de {{ total_rooms }}</small>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-auto mb-3">
+                            <div class="p-4 rounded bg-info bg-opacity-10 border-start border-info border-5">
+                                <h2 class="mb-1 text-info fw-bold">{{ available_rooms }}</h2>
+                                <p class="mb-0 small text-muted">Disponibles</p>
+                                <small class="text-muted">de {{ total_rooms }}</small>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-auto mb-3">
+                            <div class="p-4 rounded bg-warning bg-opacity-10 border-start border-warning border-5">
+                                <h2 class="mb-1 text-warning fw-bold">{{ cleaning_rooms }}</h2>
+                                <p class="mb-0 small text-muted">En Limpieza</p>
+                                <small class="text-muted">de {{ total_rooms }}</small>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-auto mb-3">
+                            <div class="p-4 rounded bg-danger bg-opacity-10 border-start border-danger border-5">
+                                <h2 class="mb-1 text-danger fw-bold">{{ maintenance_rooms }}</h2>
+                                <p class="mb-0 small text-muted">Mantenimiento</p>
+                                <small class="text-muted">de {{ total_rooms }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Barra de progreso de ocupación -->
+                    <div class="mt-4">
+                        <h6 class="mb-2">Tasa de Ocupación</h6>
+                        <div class="progress" style="height: 30px;">
+                            <div class="progress-bar bg-success" role="progressbar" 
+                                 style="width: {{ occupancy_rate }}%" 
+                                 aria-valuenow="{{ occupancy_rate }}" aria-valuemin="0" aria-valuemax="100">
+                                <strong>{{ "%.1f"|format(occupancy_rate) }}%</strong>
+                            </div>
+                        </div>
+                        <small class="text-muted d-block mt-2">
+                            {{ occupied_rooms }} de {{ total_rooms }} habitaciones ocupadas
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ingresos -->
+    <div class="row mb-4">
+        <div class="col-12 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light border-bottom">
+                    <h5 class="mb-0"><i class="fas fa-money-bill-wave"></i> Ingresos Totales</h5>
+                </div>
+                <div class="card-body text-center">
+                    <div class="display-4 text-success mb-3">${{ "%.2f"|format(total_payments) }}</div>
+                    <div class="row">
+                        <div class="col-6">
+                            <h6 class="text-muted mb-1">Completados</h6>
+                            <h4 class="text-success">${{ "%.2f"|format(completed_payments) }}</h4>
+                        </div>
+                        <div class="col-6">
+                            <h6 class="text-muted mb-1">Pendientes</h6>
+                            <h4 class="text-warning">${{ "%.2f"|format(pending_payments) }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estado de Reservaciones -->
+        <div class="col-12 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light border-bottom">
+                    <h5 class="mb-0"><i class="fas fa-calendar-alt"></i> Estado de Reservaciones</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Total de Reservaciones</span>
+                            <span class="badge bg-primary rounded-pill">{{ total_reservations }}</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Confirmadas</span>
+                            <span class="badge bg-success rounded-pill">{{ confirmed_reservations }}</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Pendientes</span>
+                            <span class="badge bg-warning rounded-pill">{{ pending_reservations }}</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Canceladas</span>
+                            <span class="badge bg-danger rounded-pill">{{ cancelled_reservations }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos de Ejemplo -->
+    <div class="row">
+        <div class="col-12 col-lg-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light border-bottom">
+                    <h5 class="mb-0"><i class="fas fa-chart-pie"></i> Distribución de Habitaciones</h5>
+                </div>
+                <div class="card-body">
+                    <div id="chartRooms" style="height: 300px;">
+                        {% if total_rooms > 0 %}
+                        <svg viewBox="0 0 100 100" style="width: 100%; height: 100%;">
+                            <!-- Gráfico circular simple -->
+                            {% set occupied_dash = occupied_rooms / total_rooms * 251 %}
+                            {% set available_dash = available_rooms / total_rooms * 251 %}
+                            <circle cx="50" cy="50" r="40" fill="none" stroke="#28a745" stroke-width="8" stroke-dasharray="{{ occupied_dash }} 251" stroke-dashoffset="0"/>
+                            <circle cx="50" cy="50" r="40" fill="none" stroke="#17a2b8" stroke-width="8" stroke-dasharray="{{ available_dash }} 251" stroke-dashoffset="{{ -occupied_dash }}"/>
+                            <text x="50" y="55" text-anchor="middle" font-size="20" font-weight="bold" fill="#333">
+                                {{ "%.0f"|format(occupancy_rate) }}%
+                            </text>
+                        </svg>
+                        {% else %}
+                        <div class="text-center py-5">
+                            <p class="text-muted"><i class="fas fa-inbox"></i> Sin datos disponibles</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="mt-3 text-center">
+                        <small class="text-muted">
+                            <span class="me-3">
+                                <i class="fas fa-circle text-success"></i> Ocupadas: {{ occupied_rooms }}/{{ total_rooms }}
+                            </span>
+                            <span>
+                                <i class="fas fa-circle text-info"></i> Disponibles: {{ available_rooms }}/{{ total_rooms }}
+                            </span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light border-bottom">
+                    <h5 class="mb-0"><i class="fas fa-chart-bar"></i> Resumen Financiero</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <small class="text-muted d-block">Ingresos Totales</small>
+                            <h4 class="text-success">${{ "%.2f"|format(total_payments) }}</h4>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted d-block">Promedio por Reservación</small>
+                            <h4 class="text-info">
+                                {% if total_reservations > 0 %}
+                                    ${{ "%.2f"|format(total_payments / total_reservations) }}
+                                {% else %}
+                                    $0.00
+                                {% endif %}
+                            </h4>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="progress mb-3" style="height: 25px;">
+                        {% set completed_pct = (completed_payments / total_payments * 100) if total_payments > 0 else 0 %}
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ completed_pct }}%" aria-valuenow="{{ completed_pct }}" aria-valuemin="0" aria-valuemax="100">
+                            Completados {{ "%.0f"|format(completed_pct) }}%
+                        </div>
+                    </div>
+                    <small class="text-muted">
+                        Completados: ${{ "%.2f"|format(completed_payments) }}<br>
+                        Pendientes: ${{ "%.2f"|format(pending_payments) }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="row mt-4">
+        <div class="col-12 text-center">
+            <a href="{{ url_for('admin.index') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Volver al Panel
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,398 @@
+{% extends "base.html" %}
+
+{% block title %}Reserva por WhatsApp - Hotel Celeste Taraza{% endblock %}
+
+{% block content %}
+<style>
+    /* Ocultar navbar en página de reserva */
+    .navbar {
+        display: none;
+    }
+    
+    /* Fondo blanco limpio */
+    body, html {
+        padding-top: 0 !important;
+        background: #e8eaed;
+        min-height: 100vh;
+    }
+    
+    .main-content {
+        background: transparent !important;
+        margin-left: 0 !important;
+        padding: 0 !important;
+    }
+    
+    .reservation-container {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    
+    .reservation-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        animation: slideDown 0.6s ease-out;
+    }
+    
+    .reservation-header i {
+        font-size: 3rem;
+        color: #25d366;
+        margin-bottom: 1rem;
+        display: block;
+        animation: bounce 0.6s ease-out;
+    }
+    
+    .reservation-header h1 {
+        color: #1e293b;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+        font-size: 2.2rem;
+    }
+    
+    .reservation-header p {
+        color: #6b7280;
+        font-size: 1.1rem;
+    }
+    
+    .card {
+        background: white;
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.08);
+        border: none;
+        border-radius: 1.5rem;
+        animation: slideUp 0.6s ease-out;
+        overflow: hidden;
+    }
+    
+    .form-group-custom {
+        margin-bottom: 1.5rem;
+    }
+    
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+    
+    .form-group-custom label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #1e293b;
+        font-size: 1rem;
+    }
+    
+    .form-group-custom small {
+        display: block;
+        color: #6b7280;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .form-control {
+        border-radius: 0.5rem;
+        border: 1px solid #e5e7eb;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        width: 100%;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: #25d366;
+        box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.1);
+        outline: none;
+    }
+    
+    .form-control.is-invalid {
+        border-color: #dc2626;
+    }
+    
+    .invalid-feedback {
+        color: #dc2626;
+        font-size: 0.9rem;
+        margin-top: 0.25rem;
+        display: block;
+    }
+    
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+    
+    .form-row.full {
+        grid-template-columns: 1fr;
+    }
+    
+    .btn-whatsapp-submit {
+        background: linear-gradient(135deg, #25d366, #20ba58);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 0.5rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        width: 100%;
+        transition: all 0.3s ease;
+        margin-top: 1rem;
+    }
+    
+    .btn-whatsapp-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(37, 211, 102, 0.2);
+    }
+    
+    .whatsapp-info {
+        background: #e8f5e9;
+        border-left: 4px solid #25d366;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 2rem;
+        color: #1b5e20;
+    }
+    
+    .whatsapp-info i {
+        color: #25d366;
+        margin-right: 0.5rem;
+    }
+    
+    @media (max-width: 768px) {
+        .reservation-container {
+            padding: 1rem;
+        }
+        
+        .form-row {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        
+        .reservation-header h1 {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+
+<div class="reservation-container">
+    <div class="reservation-header">
+        <i class="fab fa-whatsapp"></i>
+        <h1>Reserva por WhatsApp</h1>
+        <p>Llena el formulario y nos contactaremos automáticamente</p>
+    </div>
+
+    <div class="whatsapp-info">
+        <i class="fas fa-info-circle"></i>
+        <strong>¿Cómo funciona?</strong> Completa el formulario y te enviaremos un mensaje por WhatsApp con los detalles de tu reserva.
+    </div>
+
+    <div class="card">
+        <div class="card-body" style="padding: 2rem;">
+            <form method="POST" novalidate>
+                {{ form.hidden_tag() }}
+
+                <div class="form-row">
+                    <div class="form-group-custom">
+                        <label for="{{ form.first_name.id }}">
+                            {{ form.first_name.label }}
+                        </label>
+                        {% if form.first_name.errors %}
+                            {{ form.first_name(class="form-control is-invalid", placeholder="Ej: Juan") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.first_name.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.first_name(class="form-control", placeholder="Ej: Juan") }}
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group-custom">
+                        <label for="{{ form.last_name.id }}">
+                            {{ form.last_name.label }}
+                        </label>
+                        {% if form.last_name.errors %}
+                            {{ form.last_name(class="form-control is-invalid", placeholder="Ej: Pérez") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.last_name.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.last_name(class="form-control", placeholder="Ej: Pérez") }}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="form-group-custom">
+                    <label for="{{ form.email.id }}">
+                        {{ form.email.label }}
+                    </label>
+                    {% if form.email.errors %}
+                        {{ form.email(class="form-control is-invalid", placeholder="tu@email.com") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.email.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.email(class="form-control", placeholder="tu@email.com") }}
+                    {% endif %}
+                </div>
+
+                <div class="form-group-custom">
+                    <label for="{{ form.phone.id }}">
+                        <i class="fab fa-whatsapp" style="color: #25d366;"></i>
+                        {{ form.phone.label }}
+                    </label>
+                    <small>Incluye el código de país (ej: +34612345678 o +573012345678)</small>
+                    {% if form.phone.errors %}
+                        {{ form.phone(class="form-control is-invalid", placeholder="+34 612 345 678") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.phone.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.phone(class="form-control", placeholder="+34 612 345 678") }}
+                    {% endif %}
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group-custom">
+                        <label for="{{ form.check_in_date.id }}">
+                            {{ form.check_in_date.label }}
+                        </label>
+                        {% if form.check_in_date.errors %}
+                            {{ form.check_in_date(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.check_in_date.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.check_in_date(class="form-control") }}
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group-custom">
+                        <label for="{{ form.check_out_date.id }}">
+                            {{ form.check_out_date.label }}
+                        </label>
+                        {% if form.check_out_date.errors %}
+                            {{ form.check_out_date(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.check_out_date.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.check_out_date(class="form-control") }}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Tipo de Habitación y Huéspedes -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div>
+                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #1e293b;">
+                            {{ form.room_type.label }}
+                        </label>
+                        {% if form.room_type.errors %}
+                            {{ form.room_type(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.room_type.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.room_type(class="form-control") }}
+                        {% endif %}
+                    </div>
+                    <div>
+                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #1e293b;">
+                            {{ form.number_of_guests.label }}
+                        </label>
+                        {% if form.number_of_guests.errors %}
+                            {{ form.number_of_guests(class="form-control is-invalid", min="1", max="10") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.number_of_guests.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.number_of_guests(class="form-control", min="1", max="10") }}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Solicitudes Especiales -->
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #1e293b;">
+                        {{ form.special_requests.label }}
+                    </label>
+                    <small style="color: #6b7280; display: block; margin-bottom: 0.5rem;">
+                        (Cama de bebé, piso alto, vistas, etc.)
+                    </small>
+                    {% if form.special_requests.errors %}
+                        {{ form.special_requests(class="form-control is-invalid", rows="4", placeholder="Cuéntanos tus preferencias...") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.special_requests.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.special_requests(class="form-control", rows="4", placeholder="Cuéntanos tus preferencias...") }}
+                    {% endif %}
+                </div>
+
+                <!-- Botones -->
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    {{ form.submit(class="btn btn-lg", style="background: linear-gradient(135deg, #25d366, #20ba58); color: white; border: none; flex: 1; font-weight: 600; cursor: pointer; padding: 1rem; border-radius: 0.5rem; transition: all 0.3s ease;") }}
+                    <a href="/whatsapp/booking-link" class="btn btn-lg btn-secondary" style="flex: 1; background: #f3f4f6; color: #1f2937; border: 1px solid #e5e7eb; padding: 1rem; border-radius: 0.5rem; text-decoration: none; text-align: center; font-weight: 600; transition: all 0.3s ease;">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </a>
+                </div>
+
+                <!-- Información importante -->
+                <div style="margin-top: 2rem; padding: 1rem; background-color: #ecfdf5; border-radius: 0.5rem; border-left: 4px solid #25d366;">
+                    <p style="margin: 0; color: #047857; font-size: 0.9rem;">
+                        <i class="fas fa-info-circle" style="color: #25d366; margin-right: 0.5rem;"></i>
+                        <strong>Información importante:</strong><br>
+                        Al enviar este formulario, se abrirá WhatsApp automáticamente con tu información.
+                        Nuestro equipo confirmará tu reserva en el menor tiempo posible.
+                    </p>
+                </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

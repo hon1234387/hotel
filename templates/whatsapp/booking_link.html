@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #1e293b 0%, #0f766e 100%);
+        color: white;
+        padding: 4rem 2rem;
+        border-radius: 0.5rem;
+        margin-bottom: 3rem;
+        text-align: center;
+    }
+    
+    .hero-section h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+    
+    .hero-section p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        margin-bottom: 0.5rem;
+    }
+    
+    .booking-card {
+        background: white;
+        border-radius: 0.75rem;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .booking-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.15);
+    }
+    
+    .booking-card i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        display: inline-block;
+    }
+    
+    .booking-card h2 {
+        color: #1e293b;
+        margin-bottom: 1rem;
+    }
+    
+    .booking-card p {
+        color: #6b7280;
+        margin-bottom: 1.5rem;
+        font-size: 1rem;
+    }
+    
+    .booking-cards-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        margin-bottom: 3rem;
+        max-width: 900px;
+        margin-left: auto;
+        margin-right: auto;
+        flex-wrap: nowrap;
+    }
+    
+    .btn-lg-custom {
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+        border: none;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-whatsapp {
+        background-color: #25d366;
+        color: white;
+    }
+    
+    .btn-whatsapp:hover {
+        background-color: #20ba58;
+        color: white;
+    }
+    
+    .steps {
+        background-color: #f9fafb;
+        border-radius: 0.75rem;
+        padding: 2rem;
+        margin: 2rem 0;
+    }
+    
+    .step {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+        align-items: flex-start;
+    }
+    
+    .step:last-child {
+        margin-bottom: 0;
+    }
+    
+    .step-number {
+        background-color: #0f766e;
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+    
+    .step-content h3 {
+        color: #1e293b;
+        margin-top: 0;
+    }
+    
+    .step-content p {
+        color: #6b7280;
+        margin: 0;
+    }
+    
+    .features {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        margin: 2rem auto;
+        max-width: 1000px;
+    }
+    
+    .feature {
+        text-align: center;
+    }
+    
+    .feature i {
+        font-size: 2.5rem;
+        color: #0f766e;
+        margin-bottom: 1rem;
+    }
+    
+    .feature h3 {
+        color: #1e293b;
+        margin-bottom: 0.5rem;
+    }
+    
+    .feature p {
+        color: #6b7280;
+        font-size: 0.95rem;
+    }
+    
+    @media (max-width: 768px) {
+        .features {
+            grid-template-columns: 1fr;
+        }
+        
+        .hero-section {
+            padding: 2rem 1rem;
+        }
+        
+        .hero-section h1 {
+            font-size: 1.8rem;
+        }
+        
+        .booking-card {
+            padding: 1.5rem;
+        }
+        
+        .steps {
+            padding: 1rem;
+        }
+        
+        .step {
+            gap: 1rem;
+        }
+        
+        .booking-cards-container {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>
+
+<div style="display: flex; justify-content: flex-end; margin-bottom: 1rem; max-width: 1200px; margin-left: auto; margin-right: auto; padding: 0 1rem;">
+    <a href="/auth/login" class="btn-lg-custom" style="background-color: #1e293b; color: white; padding: 0.75rem 1.5rem; font-size: 1rem;">
+        <i class="fas fa-sign-in-alt"></i> Ingresar
+    </a>
+</div>
+
+<div class="hero-section" style="max-width: 1000px; margin: 0 auto 3rem; display: flex; align-items: center; justify-content: center;">
+    <div>
+        <h1 style="margin: 0 auto;">
+            <i class="fab fa-whatsapp"></i> Reserva Fácil por WhatsApp
+        </h1>
+        <p style="margin-bottom: 0.5rem;">¡Haz tu reserva en segundos directamente a través de WhatsApp!</p>
+        <p style="font-size: 0.95rem; opacity: 0.8; margin: 0;">No necesitas crear una cuenta, es totalmente gratis</p>
+    </div>
+</div>
+
+<div style="max-width: 1200px; margin: 0 auto; padding: 0 1rem;">
+    <div class="booking-cards-container" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; margin-bottom: 3rem; max-width: 900px; margin-left: auto; margin-right: auto;">
+        <!-- Opción 1: Formulario -->
+        <div class="booking-card">
+            <i class="fas fa-edit" style="color: #0f766e;"></i>
+            <h2>Llenar Formulario</h2>
+            <p>Completa un sencillo formulario con tus datos y preferencias de habitación.</p>
+            <a href="/whatsapp/reservation" class="btn-lg-custom btn-whatsapp">
+                <i class="fas fa-edit"></i> Ir al Formulario
+            </a>
+        </div>
+        
+        <!-- Opción 2: Link Directo -->
+        <div class="booking-card">
+            <i class="fab fa-whatsapp" style="color: #25d366;"></i>
+            <h2>Chat Directo</h2>
+            <p>Charla directamente con nuestro equipo sin formulario. ¡Más personal!</p>
+            <a href="https://wa.me/573246661207?text=Hola%20Equipo%20del%20Hotel Celeste Taraza!%20Me%20gustaría%20hacer%20una%20reserva.%20¿Podemos%20hablar?" class="btn-lg-custom btn-whatsapp" target="_blank">
+                <i class="fab fa-whatsapp"></i> Abrir WhatsApp
+            </a>
+            <small style="display: block; margin-top: 0.5rem; color: #6b7280;">
+            </small>
+        </div>
+    </div>
+
+    <!-- Características -->
+    <div class="features">
+        <div class="feature">
+            <i class="fas fa-clock"></i>
+            <h3>⚡ Rápido</h3>
+            <p>Reserva en menos de 5 minutos sin complicaciones</p>
+        </div>
+        <div class="feature">
+            <i class="fas fa-lock"></i>
+            <h3>🔒 Seguro</h3>
+            <p>Tus datos están protegidos y cifrados por WhatsApp</p>
+        </div>
+        <div class="feature">
+            <i class="fas fa-mobile-alt"></i>
+            <h3>📱 Móvil</h3>
+            <p>Funciona perfectamente en tu teléfono inteligente</p>
+        </div>
+        <div class="feature">
+            <i class="fas fa-headset"></i>
+            <h3>💬 Soporte</h3>
+            <p>Habla directamente con nuestro equipo en tiempo real</p>
+        </div>
+        <div class="feature">
+            <i class="fas fa-calendar-alt"></i>
+            <h3>📅 Flexible</h3>
+            <p>Modifica o cancela tu reserva cuando necesites</p>
+        </div>
+        <div class="feature">
+            <i class="fas fa-check"></i>
+            <h3>✅ Confirmación</h3>
+            <p>Recibe confirmación instantánea en el chat</p>
+        </div>
+    </div>
+
+    <!-- Pasos -->
+    <div class="steps" style="max-width: 800px; margin: 2rem auto;">
+        <h2 style="color: #1e293b; margin-top: 0; margin-bottom: 2rem; text-align: center;">
+            <i class="fas fa-list-check"></i> ¿Cómo funciona?
+        </h2>
+        
+        <div class="step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+                <h3>Llena el Formulario</h3>
+                <p>Haz clic en "Llenar Formulario" e ingresa tus datos personales, fechas y preferencias de habitación.</p>
+            </div>
+        </div>
+        
+        <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+                <h3>Mensaje Automático</h3>
+                <p>Se abrirá WhatsApp automáticamente con un mensaje preformateado con tu información.</p>
+            </div>
+        </div>
+        
+        <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+                <h3>Envía el Mensaje</h3>
+                <p>Simplemente haz clic en enviar. ¡Tu reserva está en nuestras manos!</p>
+            </div>
+        </div>
+        
+        <div class="step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+                <h3>Confirmación</h3>
+                <p>Nuestro equipo responderá confirmando tu reserva con todos los detalles y opciones de pago.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Principal -->
+    <div style="text-align: center; margin: 3rem 0;">
+        <a href="/whatsapp/reservation" class="btn-lg-custom btn-whatsapp" style="font-size: 1.3rem; padding: 1.25rem 3rem;">
+            <i class="fas fa-edit"></i> Hacer Reserva Ahora
+        </a>
+    </div>
+
+    <!-- Footer Info -->
+    <div style="background-color: #ecfdf5; border-radius: 0.75rem; padding: 1.5rem; margin: 2rem auto; border-left: 4px solid #25d366; max-width: 800px; text-align: center;">
+        <h3 style="color: #047857; margin-top: 0;">
+            <i class="fas fa-question-circle"></i> ¿Preguntas?
+        </h3>
+        <p style="color: #047857; margin-bottom: 1rem;">
+            Si tienes dudas o necesitas ayuda, no dudes en contactarnos directamente por WhatsApp. 
+            Nuestro equipo está disponible para asistirte en el horario de atención del hotel.
+        </p>
+        <a href="https://wa.me/573246661207" class="btn-lg-custom btn-whatsapp" target="_blank">
+            <i class="fab fa-whatsapp"></i> Contactar al Hotel Celeste Taraza
+        </a>
+    </div>
+</div>
+
+<script>
+    // Nota: Reemplaza '573001234567' con tu número real de WhatsApp del hotel
+    // Formato: código de país + número sin espacios ni caracteres especiales
+    // Ejemplos: 
+    // - España: 34XXXXXXXXX
+    // - Colombia: 57XXXXXXXXX
+    // - México: 52XXXXXXXXX
+</script>
+</body>
+</html>

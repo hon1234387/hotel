@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Ver Pago{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="fas fa-receipt"></i> Detalles del Pago</h1>
+</div>
+
+<div class="row">
+    <div class="col-12 col-md-8">
+        <div class="card mb-3">
+            <div class="card-header">
+                <i class="fas fa-info-circle"></i> Información del Pago
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <strong>ID Pago:</strong><br>{{ payment.id }}
+                    </div>
+                    <div class="col-6">
+                        <strong>Reservación:</strong><br>#{{ payment.reservation_id }}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <strong>Monto:</strong><br><span class="text-success fs-5">${{ "%.2f"|format(payment.amount) }}</span>
+                    </div>
+                    <div class="col-6">
+                        <strong>Método de Pago:</strong><br>{{ payment.payment_method }}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <strong>Fecha:</strong><br>{{ payment.payment_date.strftime('%d/%m/%Y') }}
+                    </div>
+                    <div class="col-6">
+                        <strong>Estado:</strong><br>
+                        {% if payment.status == 'completed' %}
+                            <span class="badge bg-success">Completado</span>
+                        {% elif payment.status == 'pending' %}
+                            <span class="badge bg-warning">Pendiente</span>
+                        {% elif payment.status == 'failed' %}
+                            <span class="badge bg-danger">Fallido</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ payment.status }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if payment.notes %}
+                <div class="row">
+                    <div class="col-12">
+                        <strong>Observaciones:</strong><br>
+                        <p>{{ payment.notes }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="d-flex gap-2">
+            <a href="/payments" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+            <a href="/payments/{{ payment.id }}/edit" class="btn btn-warning">
+                <i class="fas fa-edit"></i> Editar
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

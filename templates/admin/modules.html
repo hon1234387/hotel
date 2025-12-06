@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Gestión de Módulos - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1><i class="fas fa-cube"></i> Gestión de Módulos</h1>
+        </div>
+    </div>
+
+    <!-- Crear Nuevo Módulo -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-plus"></i> Crear Nuevo Módulo</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" class="row g-3">
+                        <div class="col-12 col-md-4">
+                            <label for="name" class="form-label">Nombre del Módulo</label>
+                            <input type="text" class="form-control" id="name" name="name" required placeholder="Ej: Reportes">
+                        </div>
+                        <div class="col-12 col-md-5">
+                            <label for="description" class="form-label">Descripción</label>
+                            <input type="text" class="form-control" id="description" name="description" placeholder="Descripción del módulo">
+                        </div>
+                        <div class="col-12 col-md-2">
+                            <label for="icon" class="form-label">Icono</label>
+                            <input type="text" class="form-control" id="icon" name="icon" placeholder="fas fa-cube">
+                        </div>
+                        <div class="col-12 col-md-1 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100"><i class="fas fa-plus"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de Módulos -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-list"></i> Módulos del Sistema</h5>
+                </div>
+                <div class="card-body">
+                    {% if modules %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Icono</th>
+                                    <th>Nombre</th>
+                                    <th>Descripción</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for module in modules %}
+                                <tr>
+                                    <td>
+                                        <i class="{{ module.icon }}"></i>
+                                    </td>
+                                    <td>
+                                        <strong>{{ module.name }}</strong>
+                                    </td>
+                                    <td>{{ module.description or '-' }}</td>
+                                    <td>
+                                        {% if module.is_enabled %}
+                                            <span class="badge bg-success">Activo</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Inactivo</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning toggle-module" data-module-id="{{ module.id }}" title="Cambiar estado">
+                                            <i class="fas fa-toggle-on"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> No hay módulos creados
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.querySelectorAll('.toggle-module').forEach(btn => {
+    btn.addEventListener('click', async function() {
+        const moduleId = this.dataset.moduleId;
+        try {
+            const response = await fetch(`/admin/modules/${moduleId}/toggle`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+            if (data.success) {
+                location.reload();
+            }
+        } catch (error) {
+            alert('Error: ' + error);
+        }
+    });
+});
+</script>
+{% endblock %}
