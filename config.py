@@ -5,8 +5,10 @@ class Config:
     """Configuración base de la aplicación"""
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
     # PostgreSQL para producción, SQLite para desarrollo
-    if os.environ.get('DATABASE_URL'):
-        SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL').replace('postgres://', 'postgresql://', 1)
+    DATABASE_URL = os.environ.get('DATABASE_URL')
+    if DATABASE_URL:
+        # Convertir postgres:// a postgresql:// para SQLAlchemy
+        SQLALCHEMY_DATABASE_URI = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
     else:
         SQLALCHEMY_DATABASE_URI = 'sqlite:///hotel.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
