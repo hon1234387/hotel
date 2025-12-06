@@ -11,6 +11,6 @@ os.environ.setdefault('FLASK_ENV', os.environ.get('FLASK_ENV', 'production'))
 
 from app import app
 
-# Para Vercel, necesitamos exportar la aplicación Flask directamente
-# Vercel llama a la función WSGI (que Flask proporciona automáticamente)
+# Vercel requiere exportar la app directamente como módulo WSGI
+
 
